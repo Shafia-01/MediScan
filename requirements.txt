@@ -1,0 +1,9 @@
+torch
+torchvision
+Pillow
+requests
+beautifulsoup4
+pymupdf
+matplotlib
+numpy
+streamlit

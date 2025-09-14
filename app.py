@@ -8,7 +8,7 @@ from PIL import Image
 from image_classifier import ImageClassifier
 
 THEME_COLORS = {
-    "bg": "#d7eaef",
+    "bg": "#d7eaef" ,
     "primary": "#011627",
     "success": "#07F068",
     "text": "#0C0C0C",

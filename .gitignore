@@ -1,3 +1,7 @@
 extracted_images_pdf/
 docs/
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/

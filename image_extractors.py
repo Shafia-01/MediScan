@@ -3,6 +3,7 @@ import io
 import socket
 import ipaddress
 import logging
+import time
 from urllib.parse import urljoin, urlparse
 
 import requests
@@ -11,6 +12,10 @@ from PIL import Image
 import pymupdf
 
 logger = logging.getLogger(__name__)
+
+HEADERS = {
+    "User-Agent": "MediScanAI/1.0 (https://github.com/MediScanAI/classifier; mediscan.ai.project@gmail.com)"
+}
 
 
 def ensure_dir(path: str) -> None:
@@ -66,7 +71,7 @@ def extract_images_from_url(url: str, output_folder: str = "extracted_images_url
         return saved_paths
 
     try:
-        response = requests.get(url, timeout=timeout)
+        response = requests.get(url, headers=HEADERS, timeout=timeout)
         if response.status_code != 200:
             logger.error(f"Failed to retrieve the webpage: {response.status_code}")
             return saved_paths
@@ -91,20 +96,28 @@ def extract_images_from_url(url: str, output_folder: str = "extracted_images_url
                 logger.warning(f"Skipping unsafe image URL: {complete_url}")
                 continue
 
-            # Lightweight HEAD check and content-type filtering
+            # Lightweight check: check the apparent extension first
             try:
-                path_lower = complete_url.lower()
-                if '.svg' in path_lower or '.avif' in path_lower:
+                parsed_img_url = urlparse(complete_url)
+                img_path = parsed_img_url.path.lower()
+                _, ext = os.path.splitext(img_path)
+                
+                supported_exts = {'.jpg', '.jpeg', '.png', '.gif', '.webp', '.tiff', '.tif'}
+                unsupported_exts = {'.svg', '.avif'}
+                
+                if ext in unsupported_exts:
                     logger.info(f"skipping unsupported type: {complete_url} (inferred from URL extension)")
                     continue
-
+                
                 content_type = ""
-                try:
-                    head_response = requests.head(complete_url, timeout=timeout, allow_redirects=True)
-                    if head_response.status_code == 200:
-                        content_type = head_response.headers.get('content-type', '').lower()
-                except Exception as head_err:
-                    logger.debug(f"HEAD request failed for {complete_url}: {head_err}")
+                # Only perform HEAD request if extension is unrecognized or empty
+                if ext not in supported_exts:
+                    try:
+                        head_response = requests.head(complete_url, headers=HEADERS, timeout=timeout, allow_redirects=True)
+                        if head_response.status_code == 200:
+                            content_type = head_response.headers.get('content-type', '').lower()
+                    except Exception as head_err:
+                        logger.debug(f"HEAD request failed for {complete_url}: {head_err}")
 
                 if content_type:
                     if 'svg' in content_type or 'avif' in content_type:
@@ -114,7 +127,7 @@ def extract_images_from_url(url: str, output_folder: str = "extracted_images_url
                         logger.info(f"Skipping non-image file: {complete_url} (content-type: {content_type})")
                         continue
 
-                img_response = requests.get(complete_url, timeout=timeout)
+                img_response = requests.get(complete_url, headers=HEADERS, timeout=timeout)
                 if img_response.status_code != 200:
                     continue
 
@@ -156,6 +169,8 @@ def extract_images_from_url(url: str, output_folder: str = "extracted_images_url
                         os.remove(filename)
             except Exception as e:
                 logger.error(f"Failed to download {complete_url}: {e}")
+
+            time.sleep(0.1)
 
         logger.info(f"Total valid images downloaded from URL: {len(saved_paths)}")
     except Exception as e:

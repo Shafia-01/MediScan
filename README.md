@@ -242,12 +242,15 @@ The web application can be deployed on any virtual machine, container (e.g., Doc
 - **Images Tab Upload & Classification Grid**:
   [Images tab screenshot](assets/MediScan%20(1).png)
   ![Images tab screenshot](assets/MediScan%20(2).png)
+
 - **PDF Tab Extraction & Classification Results**:
   ![PDF tab screenshot](assets/MediScan%20(3).png)
   ![PDF tab screenshot](assets/MediScan%20(4).png)
+
 - **URL Tab Scraper & Page Image Classification**:
   ![URL tab screenshot](assets/MediScan%20(6).png)
   ![URL tab screenshot](assets/MediScan%20(7).png)
+  
 - **Interactive Results Table & CSV Export Button**:
   ![Results table and CSV export screenshot](assets/MediScan%20(9).png)
   ![Results table and CSV export screenshot](assets/MediScan%20(5).png)

@@ -5,11 +5,19 @@ from PIL import Image, ImageFile
 import warnings
 from image_extractors import extract_images_from_pdf as ext_from_pdf, extract_images_from_url as ext_from_url
 import os
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 import json
 import shutil
+import logging
+
+# Define module-level logger
+logger = logging.getLogger(__name__)
+
+# Shared confidence threshold constant
+DEFAULT_CONFIDENCE_THRESHOLD = 0.60
 
 warnings.filterwarnings(
     "ignore",
@@ -42,15 +50,36 @@ class ImageClassifier:
                 self.class_names = [idx_to_class[i] for i in range(len(idx_to_class))]
                 self.num_classes = len(self.class_names)
                 self.model.fc = nn.Linear(num_ftrs, self.num_classes)
-                print(f"Loaded class mapping: {self.class_names}")
+                logger.info(f"Loaded class mapping: {self.class_names}")
             except Exception as map_err:
-                print(f"Warning: Failed to load class_to_idx.json ({map_err}). Using default class order {self.class_names}.")
+                logger.warning(f"Failed to load class_to_idx.json ({map_err}). Using default class order {self.class_names}.")
 
+        self.is_model_trained = False
         if os.path.exists(model_path):
-            self.model.load_state_dict(torch.load(model_path, map_location=self.device))
-            print(f"Model loaded from {model_path}")
+            try:
+                state_dict = torch.load(model_path, map_location=self.device)
+                self.model.load_state_dict(state_dict)
+                self.is_model_trained = True
+                logger.info(f"Model loaded from {model_path}")
+            except Exception as e:
+                self.is_model_trained = False
+                checkpoint_classes = "unknown"
+                try:
+                    if 'fc.weight' in state_dict:
+                        checkpoint_classes = state_dict['fc.weight'].shape[0]
+                except Exception:
+                    pass
+                error_msg = (
+                    f"Failed to load model weights from {model_path}. This failure may be due to a mismatch "
+                    f"between class_to_idx.json and the checkpoint's class count. "
+                    f"Expected classes (from class_to_idx.json): {self.num_classes}, "
+                    f"Actual classes (from model checkpoint): {checkpoint_classes}. "
+                    f"Original error: {e}"
+                )
+                logger.error(error_msg)
+                raise RuntimeError(error_msg) from e
         else:
-            print(f"Warning: Model file {model_path} not found. Using untrained model.")
+            logger.warning(f"Model file {model_path} not found. Using untrained model.")
         
         self.model.eval()
         self.model.to(self.device)
@@ -70,23 +99,23 @@ class ImageClassifier:
         pred_class = self.class_names[pred_idx]
         confidence = float(probabilities[pred_idx])
         return pred_class, confidence, probabilities
-
-    def classify_image(self, image_path, confidence_threshold: float = 0.60, use_tta: bool = True):
+    
+    def classify_image(self, image_path, confidence_threshold: float = DEFAULT_CONFIDENCE_THRESHOLD, use_tta: bool = True):
         try:
             if not os.path.exists(image_path):
-                print(f"File does not exist: {image_path}")
+                logger.warning(f"File does not exist: {image_path}")
                 return None
 
             file_size_bytes = os.path.getsize(image_path)
             if file_size_bytes < 100:
-                print(f"File too small, likely corrupted: {image_path} ({file_size_bytes} bytes)")
+                logger.warning(f"File too small, likely corrupted: {image_path} ({file_size_bytes} bytes)")
                 return None
 
             try:
                 with Image.open(image_path) as test_img:
                     test_img.verify()
             except Exception as integrity_error:
-                print(f"Invalid or corrupted image file: {image_path} - {integrity_error}")
+                logger.warning(f"Invalid or corrupted image file: {image_path} - {integrity_error}")
                 return None
 
             image = Image.open(image_path).convert('RGB')
@@ -95,9 +124,11 @@ class ImageClassifier:
             probs_accumulator = None
 
             if use_tta:
+                flipped_arr = np.array(image)[:, ::-1, :]
+                contiguous_flipped = np.ascontiguousarray(flipped_arr)
                 augmentations = [
                     base_tensor,
-                    self.preprocess(Image.fromarray(np.array(image)[:, ::-1, :]))
+                    self.preprocess(Image.fromarray(contiguous_flipped))
                 ]
                 for t in augmentations:
                     batch = t.unsqueeze(0).to(self.device)
@@ -122,16 +153,16 @@ class ImageClassifier:
             }
 
         except Exception as e:
-            print(f"Error classifying {image_path}: {e}")
+            logger.error(f"Error classifying {image_path}: {e}")
             return None
     
-    def extract_images_from_pdf(self, pdf_path, output_folder="extracted_images_pdf"):
-        return ext_from_pdf(pdf_path, output_folder=output_folder)
+    def extract_images_from_pdf(self, pdf_path, output_folder="extracted_images_pdf", max_images: int = 50):
+        return ext_from_pdf(pdf_path, output_folder=output_folder, max_images=max_images)
     
-    def extract_images_from_url(self, url, output_folder="extracted_images_url"):
-        return ext_from_url(url, output_folder=output_folder)
+    def extract_images_from_url(self, url, output_folder="extracted_images_url", max_images: int = 50):
+        return ext_from_url(url, output_folder=output_folder, max_images=max_images)
     
-    def classify_images(self, image_paths, confidence_threshold: float = 0.60, use_tta: bool = True,
+    def classify_images(self, image_paths, confidence_threshold: float = DEFAULT_CONFIDENCE_THRESHOLD, use_tta: bool = True,
                         save_uncertain: bool = False, uncertain_dir: str = "uncertain_images"):
         results = []
         if save_uncertain and not os.path.exists(uncertain_dir):
@@ -145,13 +176,13 @@ class ImageClassifier:
                         dest = os.path.join(uncertain_dir, os.path.basename(path))
                         shutil.copy2(path, dest)
                     except Exception as copy_err:
-                        print(f"Warning: failed to copy uncertain image {path} -> {uncertain_dir}: {copy_err}")
+                        logger.warning(f"Failed to copy uncertain image {path} -> {uncertain_dir}: {copy_err}")
                 results.append(result)
         return results
     
     def display_results(self, results):
         if not results:
-            print("No results to display")
+            logger.info("No results to display")
             return
     
         num_images = len(results)
@@ -201,14 +232,14 @@ class ImageClassifier:
                             ha='center', va='center', transform=ax.transAxes,
                             bbox=dict(boxstyle="round,pad=0.3", facecolor='red' if result['class'] == 'medical' else 'blue'))
                     ax.axis('off')
-                    print(f"Unsupported image format for {result['image_path']}: shape {img_array.shape}")
+                    logger.warning(f"Unsupported image format for {result['image_path']}: shape {img_array.shape}")
                 
             except Exception as e:
                 ax.text(0.5, 0.5, f"Error loading image\n{result['class']}\n{result['confidence']:.2%}\nError: {str(e)[:20]}", 
                    ha='center', va='center', transform=ax.transAxes,
                    bbox=dict(boxstyle="round,pad=0.3", facecolor='gray'))
                 ax.axis('off')
-                print(f"Error displaying image {result['image_path']}: {e}")
+                logger.error(f"Error displaying image {result['image_path']}: {e}")
     
         for idx in range(num_images, rows * cols):
             row = idx // cols
@@ -216,7 +247,25 @@ class ImageClassifier:
             axes_grid[row][col].axis('off')
     
         plt.tight_layout()
-        plt.show()
+        
+        # Headless detection
+        backend = matplotlib.get_backend()
+        non_gui_backends = {'agg', 'cairo', 'pdf', 'pgf', 'ps', 'svg', 'template'}
+        is_headless = backend.lower() in non_gui_backends
+        
+        if is_headless:
+            filepath = "classification_display.png"
+            plt.savefig(filepath)
+            plt.close()
+            print(f"Classification display saved to {filepath}")
+        else:
+            try:
+                plt.show()
+            except Exception as show_err:
+                filepath = "classification_display.png"
+                plt.savefig(filepath)
+                plt.close()
+                print(f"Classification display saved to {filepath}")
     
     def print_summary(self, results):
         if not results:
@@ -247,30 +296,34 @@ def main():
     parser.add_argument('--model', default='image_classification_model.pth', help='Path to trained model')
     parser.add_argument('--display', action='store_true', help='Display results with images')
     parser.add_argument('--save-results', action='store_true', help='Save results to file')
-    parser.add_argument('--uncertain-threshold', type=float, default=0.60, help='Confidence threshold below which predictions are labeled uncertain')
+    parser.add_argument('--uncertain-threshold', type=float, default=DEFAULT_CONFIDENCE_THRESHOLD, help='Confidence threshold below which predictions are labeled uncertain')
     parser.add_argument('--no-tta', action='store_true', help='Disable test-time augmentation for faster but possibly less robust predictions')
     parser.add_argument('--save-uncertain', action='store_true', help='Copy uncertain images to a folder for manual review')
     parser.add_argument('--uncertain-dir', type=str, default='uncertain_images', help='Directory to store uncertain images when --save-uncertain is used')
     
     args = parser.parse_args()
+    
+    # Configure logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    
     classifier = ImageClassifier(args.model)
     input_path = args.input
     
     if input_path.lower().endswith('.pdf'):
-        print(f"Processing PDF: {input_path}")
+        logger.info(f"Processing PDF: {input_path}")
         extracted_images = classifier.extract_images_from_pdf(input_path)
     elif input_path.startswith(('http://', 'https://')):
-        print(f"Processing URL: {input_path}")
+        logger.info(f"Processing URL: {input_path}")
         extracted_images = classifier.extract_images_from_url(input_path)
     else:
-        print("Invalid input. Please provide a PDF file path or a valid URL.")
+        logger.error("Invalid input. Please provide a PDF file path or a valid URL.")
         return
     
     if not extracted_images:
-        print("No images were extracted from the input.")
+        logger.warning("No images were extracted from the input.")
         return
     
-    print(f"\nClassifying {len(extracted_images)} images...")
+    logger.info(f"Classifying {len(extracted_images)} images...")
     results = classifier.classify_images(
         extracted_images,
         confidence_threshold=args.uncertain_threshold,
@@ -294,7 +347,7 @@ def main():
                 f.write(f"Predicted Class: {result['class']}\n")
                 f.write(f"Confidence: {result['confidence']:.2%}\n")
                 f.write("-"*20 + "\n")
-        print(f"\nResults saved to {output_file}")
+        logger.info(f"Results saved to {output_file}")
 
 if __name__ == "__main__":
     import sys

@@ -1,9 +1,11 @@
 import os
 import time
+import logging
 from typing import Dict, List, Tuple
 
-from image_classifier import ImageClassifier
+from image_classifier import ImageClassifier, DEFAULT_CONFIDENCE_THRESHOLD
 
+logger = logging.getLogger(__name__)
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 
@@ -24,12 +26,12 @@ def iter_images(root_dir: str) -> List[Tuple[str, str]]:
 
 
 def evaluate(val_dir: str = "data/val", model_path: str = "image_classification_model.pth",
-             threshold: float = 0.60, use_tta: bool = False) -> Dict[str, float]:
+             threshold: float = DEFAULT_CONFIDENCE_THRESHOLD, use_tta: bool = False) -> Dict[str, float]:
     classifier = ImageClassifier(model_path=model_path)
 
     samples = iter_images(val_dir)
     if not samples:
-        print(f"No validation images found under {val_dir}.")
+        logger.warning(f"No validation images found under {val_dir}.")
         return {}
 
     total = 0
@@ -57,6 +59,8 @@ def evaluate(val_dir: str = "data/val", model_path: str = "image_classification_
     avg_ms = (elapsed / max(total, 1)) * 1000.0
 
     overall_acc = correct / total if total else 0.0
+    
+    # Keeping the exact output dictionary printed as requested
     print({
         "total": total,
         "correct": correct,
@@ -78,6 +82,5 @@ def evaluate(val_dir: str = "data/val", model_path: str = "image_classification_
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     evaluate()
-
-

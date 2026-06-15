@@ -1,16 +1,18 @@
 import os
 import tempfile
+import atexit
+import shutil
 from typing import List, Dict
 import pandas as pd
 import streamlit as st
 from PIL import Image
 
-from image_classifier import ImageClassifier
+from image_classifier import ImageClassifier, DEFAULT_CONFIDENCE_THRESHOLD
 
 THEME_COLORS = {
     "bg": "#d7eaef" ,
     "primary": "#011627",
-    "success": "#07F068",
+    "focus_outline": "#07F068",
     "text": "#0C0C0C",
     "muted": "#12436C",
     "caption": "#011627",
@@ -20,17 +22,34 @@ THEME_COLORS = {
     "badge_non_med": "#E50808",
 }
 
+# Track created temp directories for cleanup on exit
+CREATED_TEMP_DIRS = []
+
+def cleanup_temp_dirs() -> None:
+    for temp_dir in CREATED_TEMP_DIRS:
+        if os.path.exists(temp_dir):
+            try:
+                shutil.rmtree(temp_dir)
+            except Exception:
+                pass
+
+# Register the cleanup handler
+atexit.register(cleanup_temp_dirs)
+
 def apply_theme() -> None:
     css = f"""
     <style>
       .stApp {{
         background: {THEME_COLORS['bg']};
         color: {THEME_COLORS['text']};
+        font-family: Cambria, "Times New Roman", Times, serif !important;
       }}
 
-      .stApp, .stApp * {{
+      .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
+      div[role="tablist"] > button[role="tab"],
+      div[data-testid="stCaptionContainer"], .stCaption, .app-caption,
+      .result-badge, .stButton > button {{
         font-weight: 700 !important;
-        font-family: Cambria, "Times New Roman", Times, serif !important;
       }}
 
       h1, h2, h3, h4, h5, h6 {{
@@ -49,7 +68,7 @@ def apply_theme() -> None:
         color: #ffffff;
       }}
       .stButton > button:focus {{
-        outline: 2px solid {THEME_COLORS['success']};
+        outline: 2px solid {THEME_COLORS['focus_outline']};
       }}
 
       div[role="tablist"] {{
@@ -60,21 +79,17 @@ def apply_theme() -> None:
       div[role="tablist"] > button[role="tab"] {{
         border-bottom: 2px solid transparent !important;
         color: {THEME_COLORS.get('tab_text', THEME_COLORS['muted'])} !important;
-        font-weight: 600 !important;
       }}
       div[role="tablist"] > button[role="tab"][aria-selected="true"] {{
         color: {THEME_COLORS.get('tab_selected', THEME_COLORS['primary'])} !important;
         border-bottom: 2px solid {THEME_COLORS.get('tab_selected', THEME_COLORS['primary'])} !important;
-        font-weight: 700 !important;
       }}
 
       div[data-testid="stCaptionContainer"], .stCaption {{
         color: {THEME_COLORS.get('caption', THEME_COLORS['muted'])} !important;
-        font-weight: 700 !important;
       }}
       .app-caption {{
         color: {THEME_COLORS.get('caption', THEME_COLORS['muted'])} !important;
-        font-weight: 700 !important;
         font-size: 0.95rem;
         margin: 0.15rem 0 0.5rem 0;
       }}
@@ -88,8 +103,9 @@ def apply_theme() -> None:
         background: #eaf3fa;
       }}
 
-      /* Center align common text */
-      .stApp p, .stApp span, .stApp label, .stApp div, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6 {{
+      /* Center align specific headings, captions, and badges */
+      .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
+      .app-caption, .result-badge, div[data-testid="stCaptionContainer"], .stCaption {{
         text-align: center !important;
       }}
 
@@ -97,7 +113,6 @@ def apply_theme() -> None:
         display: inline-block;
         padding: 4px 10px;
         border-radius: 999px;
-        font-weight: 600;
         color: #ffffff;
         font-size: 0.85rem;
         margin: 0 0 6px 2px;
@@ -114,7 +129,9 @@ def load_classifier(model_path: str) -> ImageClassifier:
 
 def ensure_session_tempdir() -> str:
     if "_session_tmpdir" not in st.session_state:
-        st.session_state._session_tmpdir = tempfile.mkdtemp(prefix="st_uploads_")
+        tmpdir = tempfile.mkdtemp(prefix="st_uploads_")
+        st.session_state._session_tmpdir = tmpdir
+        CREATED_TEMP_DIRS.append(tmpdir)
     return st.session_state._session_tmpdir
 
 def save_upload_to_disk(upload, directory: str) -> str:
@@ -127,6 +144,10 @@ def render_results(results: List[Dict]) -> None:
     if not results:
         st.info("No results to display.")
         return
+
+    total_count = len(results)
+    uncertain_count = sum(1 for r in results if r.get("class") == "uncertain")
+    st.info(f"Total results received: {total_count}. Excluded as uncertain: {uncertain_count}.")
 
     confident_results = [r for r in results if r.get("class") in {"medical", "non_medical"}]
     if not confident_results:
@@ -142,8 +163,8 @@ def render_results(results: List[Dict]) -> None:
                     pil_img = pil_img.convert("RGB")
                     badge_class = "badge-medical" if result["class"] == "medical" else "badge-nonmed"
                     col.markdown(
-                        f"<span class='result-badge {badge_class}'>"
-                        f"{result['class'].replace('_', ' ').title()}</span>",
+                        f"<div style='text-align: center;'><span class='result-badge {badge_class}'>"
+                        f"{result['class'].replace('_', ' ').title()}</span></div>",
                         unsafe_allow_html=True,
                     )
                     col.image(pil_img, use_container_width=True)
@@ -200,10 +221,14 @@ def main() -> None:
     )
 
     model_path = "image_classification_model.pth"
-    threshold = 0.60
+    threshold = DEFAULT_CONFIDENCE_THRESHOLD
     use_tta = True
 
     classifier = load_classifier(model_path=model_path)
+
+    # Untrained model safeguard
+    if not classifier.is_model_trained:
+        st.error("No trained model weights were found. Classification results will not be meaningful.")
 
     tabs = st.tabs(["IMAGES", "PDF", "URL"])
 
@@ -224,7 +249,7 @@ def main() -> None:
                 except Exception as e:
                     st.error(f"Failed to save upload: {up.name} ({e})")
 
-            if st.button("Classify images", type="primary"):
+            if st.button("Classify images", type="primary", disabled=not classifier.is_model_trained):
                 with st.spinner("Classifying..."):
                     results = classifier.classify_images(
                         image_paths,
@@ -239,7 +264,7 @@ def main() -> None:
         if pdf_upload is not None:
             tmpdir = ensure_session_tempdir()
             pdf_path = save_upload_to_disk(pdf_upload, tmpdir)
-            if st.button("Extract images and classify", type="primary"):
+            if st.button("Extract images and classify", type="primary", disabled=not classifier.is_model_trained):
                 with st.spinner("Extracting images from PDF..."):
                     extracted_paths = classifier.extract_images_from_pdf(pdf_path, output_folder=os.path.join(tmpdir, "pdf_images"))
                 if not extracted_paths:
@@ -256,7 +281,7 @@ def main() -> None:
     with tabs[2]:
         st.subheader(":blue[Provide a URL to scrape and classify images]")
         url = st.text_input("Enter a URL (http/https)")
-        if st.button("Fetch images and classify", disabled=not bool(url.strip())):
+        if st.button("Fetch images and classify", disabled=not classifier.is_model_trained or not bool(url.strip())):
             tmpdir = ensure_session_tempdir()
             with st.spinner("Downloading images from URL..."):
                 extracted_paths = classifier.extract_images_from_url(url, output_folder=os.path.join(tmpdir, "url_images"))
@@ -273,5 +298,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-

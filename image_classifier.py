@@ -257,7 +257,7 @@ class ImageClassifier:
             filepath = "classification_display.png"
             plt.savefig(filepath)
             plt.close()
-            print(f"Classification display saved to {filepath}")
+            logger.info(f"Classification display saved to {filepath}")
         else:
             try:
                 plt.show()
@@ -265,7 +265,7 @@ class ImageClassifier:
                 filepath = "classification_display.png"
                 plt.savefig(filepath)
                 plt.close()
-                print(f"Classification display saved to {filepath}")
+                logger.info(f"Classification display saved to {filepath}")
     
     def print_summary(self, results):
         if not results:

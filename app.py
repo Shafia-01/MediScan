@@ -224,7 +224,11 @@ def main() -> None:
     threshold = DEFAULT_CONFIDENCE_THRESHOLD
     use_tta = True
 
-    classifier = load_classifier(model_path=model_path)
+    try:
+        classifier = load_classifier(model_path=model_path)
+    except RuntimeError as e:
+        st.error(f"Failed to load model: {e}")
+        st.stop()
 
     # Untrained model safeguard
     if not classifier.is_model_trained:

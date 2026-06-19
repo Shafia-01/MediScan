@@ -212,11 +212,11 @@ def render_results(results: List[Dict]) -> None:
     )
 
 def main() -> None:
-    st.set_page_config(page_title="Med vs Non-med Image Classifier", layout="wide")
+    st.set_page_config(page_title="MediScan", layout="wide")
     apply_theme()
-    st.title("Medical vs Non-medical Image Classifier")
+    st.title("MediScan")
     st.markdown(
-        f"<div class='app-caption'>Upload images, a PDF, or provide a URL. The model will classify each image as medical or non-medical.</div>",
+        f"<div class='app-caption'>Medical vs Non‑Medical Image Classifier</div>",
         unsafe_allow_html=True,
     )
 

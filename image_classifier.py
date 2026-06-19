@@ -291,7 +291,7 @@ class ImageClassifier:
             print(f"{i}. {os.path.basename(result['image_path'])}: {result['class']} (Confidence: {result['confidence']:.2%})")
 
 def main():
-    parser = argparse.ArgumentParser(description='Classify images from PDF or URL')
+    parser = argparse.ArgumentParser(description='MediScan - Medical vs Non-Medical Image Classifier')
     parser.add_argument('--input', required=True, help='Input: PDF file path or URL')
     parser.add_argument('--model', default='image_classification_model.pth', help='Path to trained model')
     parser.add_argument('--display', action='store_true', help='Display results with images')

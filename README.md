@@ -1,10 +1,16 @@
-<h1 align="center">Medical vs Non‑Medical Image Classifier</h1>
+<h1 align="center">MediScan</h1>
+<p align="center">Medical vs Non‑Medical Image Classifier</p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python 3.9+">
+  <img src="https://img.shields.io/badge/Python-3.9+-blue.svg?style=flat&logo=python&logoColor=white" alt="Python 3.9+">
   <img src="https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=flat&logo=PyTorch&logoColor=white" alt="PyTorch">
   <img src="https://img.shields.io/badge/Streamlit-%23FF4B4B.svg?style=flat&logo=streamlit&logoColor=white" alt="Streamlit">
-  <img src="https://img.shields.io/badge/License-Educational%20%2F%20Research-green.svg" alt="License">
+  <img src="https://img.shields.io/badge/NumPy-%23013243.svg?style=flat&logo=numpy&logoColor=white" alt="NumPy">
+  <img src="https://img.shields.io/badge/pandas-%23150458.svg?style=flat&logo=pandas&logoColor=white" alt="Pandas">
+  <img src="https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=flat&logo=matplotlib&logoColor=black" alt="Matplotlib">
+  <img src="https://img.shields.io/badge/Pillow-%23121212.svg?style=flat&logo=python&logoColor=white" alt="Pillow">
+  <img src="https://img.shields.io/badge/PyMuPDF-orange.svg?style=flat" alt="PyMuPDF">
+  <img src="https://img.shields.io/badge/BeautifulSoup4-green.svg?style=flat" alt="BeautifulSoup4">
 </p>
 
 An end‑to‑end system to classify images as medical vs non‑medical. The system utilizes a fine-tuned ResNet18 model to categorize inputs and is accessible via both an interactive Streamlit web application and a command-line interface (CLI).
@@ -60,11 +66,11 @@ graph TD
 ```
 
 ### Module Relationships
-- **`MediScan AI/app.py`**: The web application interface. It handles user inputs (files, PDFs, URLs), coordinates classification, renders image grids with styled HTML/CSS, and handles session-based temporary directories.
-- **`MediScan AI/image_classifier.py`**: Declares the core `ImageClassifier` class and serves as the CLI entry point. It manages PyTorch model initialization, weight loading, preprocessing, TTA execution, confidence thresholding, and output rendering.
-- **`MediScan AI/image_extractors.py`**: A helper library containing standalone PDF extraction logic (via `PyMuPDF`) and web-scraping logic (via `BeautifulSoup` and `requests`), integrated with local SSRF safety verification.
-- **`MediScan AI/training_model.py`**: A script to train the model from scratch using transfer learning, custom datasets, and class-imbalance mitigations.
-- **`MediScan AI/evaluate.py`**: A script to evaluate a trained model's performance on the validation dataset.
+- **`MediScan/app.py`**: The web application interface. It handles user inputs (files, PDFs, URLs), coordinates classification, renders image grids with styled HTML/CSS, and handles session-based temporary directories.
+- **`MediScan/image_classifier.py`**: Declares the core `ImageClassifier` class and serves as the CLI entry point. It manages PyTorch model initialization, weight loading, preprocessing, TTA execution, confidence thresholding, and output rendering.
+- **`MediScan/image_extractors.py`**: A helper library containing standalone PDF extraction logic (via `PyMuPDF`) and web-scraping logic (via `BeautifulSoup` and `requests`), integrated with local SSRF safety verification.
+- **`MediScan/training_model.py`**: A script to train the model from scratch using transfer learning, custom datasets, and class-imbalance mitigations.
+- **`MediScan/evaluate.py`**: A script to evaluate a trained model's performance on the validation dataset.
 
 ### Tab Inference Flows in Streamlit
 1. **IMAGES Tab**:
@@ -85,7 +91,7 @@ graph TD
 ---
 
 ## Tech Stack
-All dependencies are defined in [MediScan AI/requirements.txt](file:///c:/Users/Shafia/PROJECTS/MediScan%20AI/requirements.txt):
+All dependencies are defined in [MediScan/requirements.txt](file:///c:/Users/Shafia/PROJECTS/MediScan/requirements.txt):
 - **`torch` (>=2.0.0, <3.0.0)**: Used as the core deep learning framework for model definition, inference execution, and tensor manipulations.
 - **`torchvision` (>=0.15.0, <1.0.0)**: Provides the ResNet18 model architecture, ImageNet pre-trained weights, and image transform pipelines.
 - **`Pillow` (>=9.5.0, <11.0.0)**: Utilized for opening, converting, verifying, and saving image files.
@@ -135,7 +141,7 @@ All dependencies are defined in [MediScan AI/requirements.txt](file:///c:/Users/
 
 ## Folder Structure
 ```
-MediScan AI/
+MediScan/
 ├── app.py                         # Streamlit UI front-end implementation
 ├── image_classifier.py            # Core Classifier class and CLI runner
 ├── image_extractors.py            # PDF and URL extraction/scraping libraries
@@ -154,7 +160,7 @@ MediScan AI/
 ```
 
 > [!NOTE]
-> `MediScan AI/image_classification_model.pth` is the trained weights file. It is a training-time artifact **not** checked into this repository. It must be generated by running `MediScan AI/training_model.py` or placed manually in the project root folder prior to running predictions or evaluations.
+> `MediScan/image_classification_model.pth` is the trained weights file. It is a training-time artifact **not** checked into this repository. It must be generated by running `MediScan/training_model.py` or placed manually in the project root folder prior to running predictions or evaluations.
 
 ---
 
@@ -167,7 +173,7 @@ MediScan AI/
 1. Clone this repository to your local system:
    ```bash
    git clone <repository_url>
-   cd "MediScan AI"
+   cd "MediScan"
    ```
 2. Create and activate a Python virtual environment:
    ```bash
@@ -211,7 +217,7 @@ python image_classifier.py --input <path_to_pdf_or_url> [flags]
 
 #### CLI Arguments and Flags
 - `--input` *(Required)*: The input to analyze. Must be a path to a `.pdf` file or an HTTP/HTTPS URL.
-- `--model` *(Default: `MediScan AI/image_classification_model.pth`)*: Path to the trained PyTorch model weights.
+- `--model` *(Default: `MediScan/image_classification_model.pth`)*: Path to the trained PyTorch model weights.
 - `--display` *(Flag)*: Displays a visual grid of images and predictions. Saves to `classification_display.png` if running in headless environments.
 - `--save-results` *(Flag)*: Saves raw text outputs containing classifications and confidence levels to `classification_results.txt`.
 - `--uncertain-threshold` *(Default: `0.60`)*: Softmax probability threshold below which predictions are labeled `uncertain`.
@@ -224,15 +230,15 @@ python image_classifier.py --input <path_to_pdf_or_url> [flags]
 ## Deployment Guide
 The web application can be deployed on any virtual machine, container (e.g., Docker), or application hosting platform (such as Streamlit Community Cloud or Hugging Face Spaces):
 1. Ensure the system environment runs Python 3.9+.
-2. Make sure the dependencies from `MediScan AI/requirements.txt` are successfully installed.
-3. Ensure a pre-trained `MediScan AI/image_classification_model.pth` and matching `MediScan AI/class_to_idx.json` are present in the application root directory.
+2. Make sure the dependencies from `MediScan/requirements.txt` are successfully installed.
+3. Ensure a pre-trained `MediScan/image_classification_model.pth` and matching `MediScan/class_to_idx.json` are present in the application root directory.
 4. Run the web server command:
    ```bash
    python -m streamlit run app.py --server.port 8501 --server.address 0.0.0.0
    ```
 
 > [!WARNING]
-> **Outbound Network Security Note**: The URL image fetching feature initiates outbound HTTP requests via `requests.get` to target URLs. If deployed inside a corporate network or private cloud, ensure network rules restrict access or isolate the host container to prevent SSRF vulnerabilities, although basic validation check rules are implemented in `MediScan AI/image_extractors.py`.
+> **Outbound Network Security Note**: The URL image fetching feature initiates outbound HTTP requests via `requests.get` to target URLs. If deployed inside a corporate network or private cloud, ensure network rules restrict access or isolate the host container to prevent SSRF vulnerabilities, although basic validation check rules are implemented in `MediScan/image_extractors.py`.
 
 ---
 
@@ -267,7 +273,7 @@ The web application can be deployed on any virtual machine, container (e.g., Doc
 ---
 
 ## Security Considerations
-- **Outbound HTTP / SSRF Protection**: The URL-scraping feature executes outbound network requests. `MediScan AI/image_extractors.py` includes validation checks using `socket.getaddrinfo` to resolve and block hostnames pointing to loopbacks (`127.0.0.1`), private networks (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), link-local IPs, and cloud metadata environments (`169.254.169.254`).
+- **Outbound HTTP / SSRF Protection**: The URL-scraping feature executes outbound network requests. `MediScan/image_extractors.py` includes validation checks using `socket.getaddrinfo` to resolve and block hostnames pointing to loopbacks (`127.0.0.1`), private networks (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), link-local IPs, and cloud metadata environments (`169.254.169.254`).
 - **Temporary File Handling**: Web uploads, PDF-extracted images, and URL-scraped images are written to temporary folders created via `tempfile.mkdtemp`. These directories are registered with Python's `atexit` module to ensure they are cleaned up and deleted from the local disk when the web server process exits.
 - **Authentication**: The Streamlit app does not implement any authentication, authorization, or access control. By default, it is fully accessible to anyone with network access to the server port.
 
@@ -300,7 +306,7 @@ This project is for educational and research purposes.
 ---
 
 ## Accuracy Results on a Small Validation Set
-Evaluated on `MediScan AI/data/val` using `MediScan AI/evaluate.py` with threshold 0.60 and TTA disabled:
+Evaluated on `MediScan/data/val` using `MediScan/evaluate.py` with threshold 0.60 and TTA disabled:
 
 ```text
 Overall accuracy: 100.0% (101/101)
@@ -314,7 +320,7 @@ Avg inference time: ~52.09 ms/image on CPU (ResNet18)
 - **Small Validation Set Caveat**: This accuracy is evaluated on a small validation set. Real-world accuracy will vary with data distribution and image quality. Consider a larger, stratified test set and k-fold validation for stronger estimates.
 
 ### Troubleshooting Tips
-- **"Model file not found"**: Train first (`MediScan AI/training_model.py`) or place `image_classification_model.pth` in the project root.
+- **"Model file not found"**: Train first (`MediScan/training_model.py`) or place `image_classification_model.pth` in the project root.
 - **PDF or URL extraction issues**: Ensure `pymupdf`, `requests`, and `beautifulsoup4` are installed and the source contains extractable images.
 - **CUDA issues**: The code falls back to CPU automatically.
-- **Missing Dataset Folders**: Ensure you have populated the `MediScan AI/data/train` and `MediScan AI/data/val` directory structures as detailed in the Installation Guide before executing training or evaluation.
+- **Missing Dataset Folders**: Ensure you have populated the `MediScan/data/train` and `MediScan/data/val` directory structures as detailed in the Installation Guide before executing training or evaluation.

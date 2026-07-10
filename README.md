@@ -243,10 +243,9 @@ The web application can be deployed on any virtual machine, container (e.g., Doc
 ---
 
 ## Screenshots Section
-*Note: Below are placeholder image references to be replaced with actual screenshots of the application in operation.*
 
 - **Images Tab Upload & Classification Grid**:
-  [Images tab screenshot](assets/MediScan%20(1).png)
+  ![Images tab screenshot](assets/MediScan%20(1).png)
   ![Images tab screenshot](assets/MediScan%20(2).png)
 
 - **PDF Tab Extraction & Classification Results**:
@@ -289,14 +288,6 @@ The web application can be deployed on any virtual machine, container (e.g., Doc
 ## Lessons Learned
 - **TTA Tradeoffs**: Incorporating TTA provides measurable prediction robustness against slight angle and framing changes, but introduces a 2x inference latency penalty. For large documents, disabling TTA is a critical option for usability.
 - **Confidence Calibration**: Using simple softmax output for confidence thresholding is computationally free but requires empirical tuning (resulting in the default `0.60` threshold) to balance true positive recall against error rates.
-
----
-
-## Resume Highlights
-- **End-to-End Deep Learning Pipeline**: Developed a complete custom image classification pipeline, spanning dataset preparation, weighted class sampling, staged transfer learning training, validation metrics calculation, and deployment.
-- **Multi-Modal Data Extraction**: Designed resilient data ingestion layers capable of parsing and extracting embedded images from PDF binary documents and scraping HTML web resources securely.
-- **SSRF Safe Web Scraper**: Implemented network-level validation check systems (DNS resolution and private subnets checking) to securely crawl public assets.
-- **Configurable CLI Tool**: Created a full argparse-driven CLI module featuring automated result logging, conditional image display, and automatic headless fallback saving.
 
 ---
 

@@ -1,5 +1,5 @@
 <h1 align="center">MediScan</h1>
-<p align="center">Medical vs Non‑Medical Image Classifier</p>
+<p align="center">AI-Powered Medical vs. Non-Medical Image Classification System</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.9+-blue.svg?style=flat&logo=python&logoColor=white" alt="Python 3.9+">
@@ -7,13 +7,18 @@
   <img src="https://img.shields.io/badge/Streamlit-%23FF4B4B.svg?style=flat&logo=streamlit&logoColor=white" alt="Streamlit">
   <img src="https://img.shields.io/badge/NumPy-%23013243.svg?style=flat&logo=numpy&logoColor=white" alt="NumPy">
   <img src="https://img.shields.io/badge/pandas-%23150458.svg?style=flat&logo=pandas&logoColor=white" alt="Pandas">
-  <img src="https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=flat&logo=matplotlib&logoColor=black" alt="Matplotlib">
+  <img src="https://img.shields.io/badge/Matplotlib-%2311557C.svg?style=flat&logo=matplotlib&logoColor=white" alt="Matplotlib">
   <img src="https://img.shields.io/badge/Pillow-%23121212.svg?style=flat&logo=python&logoColor=white" alt="Pillow">
   <img src="https://img.shields.io/badge/PyMuPDF-orange.svg?style=flat" alt="PyMuPDF">
   <img src="https://img.shields.io/badge/BeautifulSoup4-green.svg?style=flat" alt="BeautifulSoup4">
 </p>
 
-An end‑to‑end system to classify images as medical vs non‑medical. The system utilizes a fine-tuned ResNet18 model to categorize inputs and is accessible via both an interactive Streamlit web application and a command-line interface (CLI).
+<div align="center">
+  <h3>🔗 <a href="https://trymediscan.streamlit.app/">MediScan - Recognizing Medical Images with AI</a></h3>
+  <p>
+    <i>An end‑to‑end system to classify images as medical vs non‑medical using a fine-tuned ResNet18 model. Deployed on Streamlit Community Cloud, this live web interface provides an interactive workspace where users can upload raw images, extract and classify embedded graphics within PDF documents, or securely analyze webpage URLs in real time.</i>
+  </p>
+</div>
 
 ---
 
@@ -123,7 +128,7 @@ All dependencies are defined in [MediScan/requirements.txt](file:///c:/Users/Sha
 
 ## User Flow
 ### Streamlit Web UI Flow
-1. **Accessing the App**: Navigate to the Streamlit local URL.
+1. **Accessing the App**: Navigate to your local Streamlit URL or use the live app deployed on Streamlit at [trymediscan.streamlit.app](https://trymediscan.streamlit.app/).
 2. **Selecting Mode**: Choose one of the three tabs:
    - **IMAGES**: Drag and drop or browse local image files, then click "Classify images".
    - **PDF**: Upload a `.pdf` file, then click "Extract images and classify".
@@ -242,21 +247,21 @@ The web application can be deployed on any virtual machine, container (e.g., Doc
 
 ---
 
-## Screenshots Section
+## Screenshots
 
-- **Images Tab Upload & Classification Grid**:
+1. **Images Tab Upload & Classification Grid**:
   ![Images tab screenshot](assets/MediScan%20(1).png)
   ![Images tab screenshot](assets/MediScan%20(2).png)
 
-- **PDF Tab Extraction & Classification Results**:
+2. **PDF Tab Extraction & Classification Results**:
   ![PDF tab screenshot](assets/MediScan%20(3).png)
   ![PDF tab screenshot](assets/MediScan%20(4).png)
 
-- **URL Tab Scraper & Page Image Classification**:
+3. **URL Tab Scraper & Page Image Classification**:
   ![URL tab screenshot](assets/MediScan%20(6).png)
   ![URL tab screenshot](assets/MediScan%20(7).png)
   
-- **Interactive Results Table & CSV Export Button**:
+4. **Interactive Results Table & CSV Export Button**:
   ![Results table and CSV export screenshot](assets/MediScan%20(9).png)
   ![Results table and CSV export screenshot](assets/MediScan%20(5).png)
   ![Results table and CSV export screenshot](assets/MediScan%20(8).png)

@@ -57,6 +57,14 @@ class ImageClassifier:
         self.is_model_trained = False
         if os.path.exists(model_path):
             try:
+                # Check if the file is a Git LFS pointer instead of actual weights
+                with open(model_path, 'rb') as f:
+                    header = f.read(100)
+                    if b'version https://git-lfs' in header:
+                        raise RuntimeError(
+                            f"The file {model_path} is a Git LFS pointer, not the actual model weights. "
+                            "Please run 'git lfs pull' to download the actual model weights."
+                        )
                 state_dict = torch.load(model_path, map_location=self.device)
                 self.model.load_state_dict(state_dict)
                 self.is_model_trained = True

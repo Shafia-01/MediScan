@@ -15,9 +15,16 @@
 
 <div align="center">
   <h3>🔗 <a href="https://trymediscan.streamlit.app/">MediScan - Recognizing Medical Images with AI</a></h3>
-  <h3><a href="https://youtu.be/DnP0gZCNxh0"><img src="https://img.shields.io/badge/YouTube-Demo%20Video-red?style=flat-square&logo=youtube&logoColor=white" alt="YouTube Demo Video"></a></h3>
+  <p align="center">
+    <a href="https://trymediscan.streamlit.app/"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Streamlit App"></a>
+  </p>
   <p>
     <i>An end‑to‑end system to classify images as medical vs non‑medical using a fine-tuned ResNet18 model. Deployed on Streamlit Community Cloud, this live web interface provides an interactive workspace where users can upload raw images, extract and classify embedded graphics within PDF documents, or securely analyze webpage URLs in real time.</i>
+  </p>
+
+  <h3><a href="https://youtu.be/DnP0gZCNxh0"><img src="https://img.shields.io/badge/YouTube-Demo%20Video-red?style=flat-square&logo=youtube&logoColor=white" alt="YouTube Demo Video"></a></h3>
+  <p>
+    The demo link above features a video walkthrough demonstrating MediScan's AI-powered image classification pipeline, fine-tuned ResNet18 model inference with Test-Time Augmentation (TTA), automated image extraction from PDF documents, secure SSRF-protected web page image scraping, and the interactive Streamlit dashboard showcasing real-time predictions, confidence metrics, and interactive results export.
   </p>
 </div>
 
@@ -209,8 +216,8 @@ python training_model.py
 ```
 This script will output epoch progress, unfreeze layers on epoch 4, run early stopping if validation loss plateaus, and save the best state dictionary to `image_classification_model.pth` and mappings to `class_to_idx.json`.
 
-### 2. Streamlit Web Interface
-To run the interactive web application:
+### 2. Streamlit Web Interface (Optional)
+*(Note: The interface is fully deployed on Streamlit Community Cloud at the link above. To run it locally instead)*:
 ```bash
 python -m streamlit run app.py
 ```
@@ -233,15 +240,26 @@ python image_classifier.py --input <path_to_pdf_or_url> [flags]
 
 ---
 
-## Deployment Guide
-The web application can be deployed on any virtual machine, container (e.g., Docker), or application hosting platform (such as Streamlit Community Cloud or Hugging Face Spaces):
-1. Ensure the system environment runs Python 3.9+.
-2. Make sure the dependencies from `MediScan/requirements.txt` are successfully installed.
-3. Ensure a pre-trained `MediScan/image_classification_model.pth` and matching `MediScan/class_to_idx.json` are present in the application root directory.
-4. Run the web server command:
+## 🚀 Deployment Status
+
+The application is fully deployed and publicly accessible on **Streamlit Community Cloud**:
+👉 **[trymediscan.streamlit.app](https://trymediscan.streamlit.app/)**
+
+### Deploying Your Own Instance
+To deploy your own copy of MediScan to Streamlit Community Cloud or another hosting platform (such as Hugging Face Spaces):
+1. Fork/clone this repository.
+2. Ensure the pre-trained model weights (`image_classification_model.pth`) and class index mappings (`class_to_idx.json`) are present in the root folder.
+3. Connect your repository to your Streamlit Community Cloud account.
+4. Set the main file path to `app.py` and deploy.
+
+For manual deployment on an independent server or virtual machine:
+1. Ensure the environment runs Python 3.9+.
+2. Install dependencies: `pip install -r requirements.txt`.
+3. Launch the web application:
    ```bash
    python -m streamlit run app.py --server.port 8501 --server.address 0.0.0.0
    ```
+
 
 > [!WARNING]
 > **Outbound Network Security Note**: The URL image fetching feature initiates outbound HTTP requests via `requests.get` to target URLs. If deployed inside a corporate network or private cloud, ensure network rules restrict access or isolate the host container to prevent SSRF vulnerabilities, although basic validation check rules are implemented in `MediScan/image_extractors.py`.

@@ -15,9 +15,6 @@
 
 <div align="center">
   <h3>🔗 <a href="https://trymediscan.streamlit.app/">MediScan - Recognizing Medical Images with AI</a></h3>
-  <p align="center">
-    <a href="https://trymediscan.streamlit.app/"><img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Streamlit App"></a>
-  </p>
   <p>
     <i>An end‑to‑end system to classify images as medical vs non‑medical using a fine-tuned ResNet18 model. Deployed on Streamlit Community Cloud, this live web interface provides an interactive workspace where users can upload raw images, extract and classify embedded graphics within PDF documents, or securely analyze webpage URLs in real time.</i>
   </p>

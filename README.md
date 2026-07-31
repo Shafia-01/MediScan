@@ -27,19 +27,19 @@
 
 ---
 
-## Project Overview
+## 🔍 Project Overview
 This system classifies images into two categories: **medical** and **non-medical**. It utilizes a ResNet18 convolutional neural network (CNN) trained with PyTorch. The application provides two interfaces for prediction:
 1. **Streamlit Web UI**: Allows users to upload raw images, upload PDF documents to extract and classify embedded images, or scrape and classify images from a target URL.
 2. **Command-Line Interface (CLI)**: Enables automated execution, saving of outputs, display of results, and copying of uncertain predictions for auditing.
 
 ---
 
-## Why This Project Exists
+## 💡 Why This Project Exists
 In medical informatics and clinical data management, large volumes of unorganized files and images are frequently generated. This project serves a practical triage utility: automatically sorting incoming image streams, document attachments, and web resources to separate clinical/medical imagery (e.g., X-rays, MRI scans, pathology slides) from non-clinical, general imagery. This helps streamline database indexing, protect patient privacy, and ensure data ingestion pipelines receive the correct data types.
 
 ---
 
-## Key Features
+## 🌟 Key Features
 - **Multi-Modal Image Input**: Supports direct file uploads, image extraction from PDFs, and scraping of images from web pages (URLs).
 - **Interactive Streamlit Web Dashboard**: Centrally displays prediction results with visual color-coded confidence badges, interactive tables, and CSV exports.
 - **Robust Inference with Test-Time Augmentation (TTA)**: Employs horizontal flip averaging to increase the reliability of predictions.
@@ -50,7 +50,7 @@ In medical informatics and clinical data management, large volumes of unorganize
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 ```mermaid
 graph TD
     subgraph Frontend / Interfaces
@@ -100,7 +100,7 @@ graph TD
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 All dependencies are defined in [MediScan/requirements.txt](file:///c:/Users/Shafia/PROJECTS/MediScan/requirements.txt):
 - **`torch` (>=2.0.0, <3.0.0)**: Used as the core deep learning framework for model definition, inference execution, and tensor manipulations.
 - **`torchvision` (>=0.15.0, <1.0.0)**: Provides the ResNet18 model architecture, ImageNet pre-trained weights, and image transform pipelines.
@@ -114,7 +114,7 @@ All dependencies are defined in [MediScan/requirements.txt](file:///c:/Users/Sha
 
 ---
 
-## Engineering Decisions
+## 🧠 Engineering Decisions
 1. **ResNet18 Baseline**: A ResNet18 model is selected because it strikes a strong balance between computational footprint and performance. With only ~11.7M parameters, it has low latency on CPUs (~50-60 ms/image) and scales efficiently on GPUs.
 2. **Staged Fine-Tuning**: In training, the backbone layers are initially frozen, and only the final classification head (`fc`) is trained (using a higher learning rate of `1e-3` for 3 warm-up epochs). Subsequently, all layers are unfrozen and trained at a lower learning rate of `3e-4` to adapt features without causing catastrophic forgetting.
 3. **Imbalance Mitigation via WeightedRandomSampler**: To handle unequal distribution of training images between classes, a `WeightedRandomSampler` is utilized. It calculates weights inversely proportional to class frequencies, ensuring the network is exposed to classes evenly during training.
@@ -123,7 +123,7 @@ All dependencies are defined in [MediScan/requirements.txt](file:///c:/Users/Sha
 
 ---
 
-## AI Components
+## 🤖 AI Components
 - **Classifier Backbone**: PyTorch ResNet18 pre-trained on ImageNet.
 - **Classification Head**: A replaced linear layer (`nn.Linear`) mapping the 512 backbone output features to the 2 target classes (`medical` and `non_medical`).
 - **Data Normalization**: Prior to model entry, input images are resized to $256 \times 256$, cropped to the center $224 \times 224$, and normalized using standard ImageNet mean parameters `[0.485, 0.456, 0.406]` and standard deviations `[0.229, 0.224, 0.225]`.
@@ -131,7 +131,7 @@ All dependencies are defined in [MediScan/requirements.txt](file:///c:/Users/Sha
 
 ---
 
-## User Flow
+## 🔄 User Flow
 ### Streamlit Web UI Flow
 1. **Accessing the App**: Navigate to your local Streamlit URL or use the live app deployed on Streamlit at [trymediscan.streamlit.app](https://trymediscan.streamlit.app/).
 2. **Selecting Mode**: Choose one of the three tabs:
@@ -149,7 +149,7 @@ All dependencies are defined in [MediScan/requirements.txt](file:///c:/Users/Sha
 
 ---
 
-## Folder Structure
+## 📂 Folder Structure
 ```
 MediScan/
 ├── app.py                         # Streamlit UI front-end implementation
@@ -174,7 +174,7 @@ MediScan/
 
 ---
 
-## Installation Guide
+## 📥 Installation Guide
 ### Prerequisites
 - Python 3.9+ (due to typing annotations like `list[str]` and `tuple[str, str]` utilized in code).
 - A populated local dataset under `data/` if you intend to train or evaluate.
@@ -205,7 +205,7 @@ MediScan/
 
 ---
 
-## Running The Project
+## 🚀 Running The Project
 ### 1. Training the Model
 To train the ResNet18 model using transfer learning on your custom dataset:
 ```bash
@@ -263,7 +263,7 @@ For manual deployment on an independent server or virtual machine:
 
 ---
 
-## Screenshots
+## 📸 Screenshots
 
 <h3 align="center">1. Images Tab Upload & Classification Grid</h3>
 <p align="center"><i>The Streamlit web interface allows users to upload custom images for instant classification into medical vs. non-medical classes with confidence scores.</i></p>
@@ -303,7 +303,7 @@ For manual deployment on an independent server or virtual machine:
 
 ---
 
-## Performance Considerations
+## ⚡ Performance Considerations
 - **Model Latency**: ResNet18 runs single-image inference in ~50-60 ms on standard CPUs, making it ideal for real-time web application feedback. GPUs are auto-selected when available.
 - **TTA Overhead**: Test-time augmentation (TTA) doubles the processing cost (~2x inference time per image) because it evaluates two variations of each image. CLI users can bypass this using the `--no-tta` flag.
 - **Batch Sizing**: The Streamlit interface passes images sequentially (batch size of 1) to optimize memory usage and avoid OOM scenarios during concurrent file uploads.
@@ -311,27 +311,27 @@ For manual deployment on an independent server or virtual machine:
 
 ---
 
-## Security Considerations
+## 🔒 Security Considerations
 - **Outbound HTTP / SSRF Protection**: The URL-scraping feature executes outbound network requests. `MediScan/image_extractors.py` includes validation checks using `socket.getaddrinfo` to resolve and block hostnames pointing to loopbacks (`127.0.0.1`), private networks (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), link-local IPs, and cloud metadata environments (`169.254.169.254`).
 - **Temporary File Handling**: Web uploads, PDF-extracted images, and URL-scraped images are written to temporary folders created via `tempfile.mkdtemp`. These directories are registered with Python's `atexit` module to ensure they are cleaned up and deleted from the local disk when the web server process exits.
 - **Authentication**: The Streamlit app does not implement any authentication, authorization, or access control. By default, it is fully accessible to anyone with network access to the server port.
 
 ---
 
-## Challenges Solved
+## 🛠️ Challenges Solved
 - **Class Imbalance**: Mitigated by writing a weighted sampler calculation into the training loader setup, balancing backprop gradients over unequal image pools.
 - **Robustness in Varied Contexts**: Resolved using both heavy training augmentation (crops, jitter, rotations) and test-time horizontal flip averaging.
 - **False Positive Control**: Managed by classifying low-confidence predictions as `uncertain`, preventing clinical pipelines from processing questionable images.
 
 ---
 
-## Lessons Learned
+## 📚 Lessons Learned
 - **TTA Tradeoffs**: Incorporating TTA provides measurable prediction robustness against slight angle and framing changes, but introduces a 2x inference latency penalty. For large documents, disabling TTA is a critical option for usability.
 - **Confidence Calibration**: Using simple softmax output for confidence thresholding is computationally free but requires empirical tuning (resulting in the default `0.60` threshold) to balance true positive recall against error rates.
 
 ---
 
-## Accuracy Results on a Small Validation Set
+## 📊 Accuracy Results on a Small Validation Set
 Evaluated on `MediScan/data/val` using `MediScan/evaluate.py` with threshold 0.60 and TTA disabled:
 
 ```text
@@ -342,13 +342,13 @@ Avg inference time: ~52.09 ms/image on CPU (ResNet18)
 ```
 ---
 
-## Context and Caveats
+## ⚠️ Context and Caveats
 - **Sample Counts**: The evaluation script prints the total sample count (101/101) and per-class percentages, but does not output specific per-class sample counts.
 - **Small Validation Set Caveat**: This accuracy is evaluated on a small validation set. Real-world accuracy will vary with data distribution and image quality. Consider a larger, stratified test set and k-fold validation for stronger estimates.
 
 ---
 
-## Troubleshooting Tips
+## 🔧 Troubleshooting Tips
 - **"Model file not found"**: Train first (`MediScan/training_model.py`) or place `image_classification_model.pth` in the project root.
 - **PDF or URL extraction issues**: Ensure `pymupdf`, `requests`, and `beautifulsoup4` are installed and the source contains extractable images.
 - **CUDA issues**: The code falls back to CPU automatically.

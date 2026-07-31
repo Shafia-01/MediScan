@@ -263,7 +263,7 @@ For manual deployment on an independent server or virtual machine:
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 <h3 align="center">1. Images Tab Upload & Classification Grid</h3>
 <p align="center"><i>The Streamlit web interface allows users to upload custom images for instant classification into medical vs. non-medical classes with confidence scores.</i></p>
@@ -340,12 +340,15 @@ Per‑class accuracy: medical 100.0%, non_medical 100.0%
 Uncertain predictions: 0
 Avg inference time: ~52.09 ms/image on CPU (ResNet18)
 ```
+---
 
-### Context and Caveats
+## Context and Caveats
 - **Sample Counts**: The evaluation script prints the total sample count (101/101) and per-class percentages, but does not output specific per-class sample counts.
 - **Small Validation Set Caveat**: This accuracy is evaluated on a small validation set. Real-world accuracy will vary with data distribution and image quality. Consider a larger, stratified test set and k-fold validation for stronger estimates.
 
-### Troubleshooting Tips
+---
+
+## Troubleshooting Tips
 - **"Model file not found"**: Train first (`MediScan/training_model.py`) or place `image_classification_model.pth` in the project root.
 - **PDF or URL extraction issues**: Ensure `pymupdf`, `requests`, and `beautifulsoup4` are installed and the source contains extractable images.
 - **CUDA issues**: The code falls back to CPU automatically.

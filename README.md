@@ -248,32 +248,43 @@ The web application can be deployed on any virtual machine, container (e.g., Doc
 
 ---
 
-## Screenshots
+## 📸 Screenshots
 
-### 1. Images Tab Upload & Classification Grid
+<h3 align="center">1. Images Tab Upload & Classification Grid</h3>
+<p align="center"><i>The Streamlit web interface allows users to upload custom images for instant classification into medical vs. non-medical classes with confidence scores.</i></p>
 <p align="center">
-  <img src="assets/MediScan%20(1).png" width="48%" />
-  <img src="assets/MediScan%20(2).png" width="48%" />
+  <img src="assets/MediScan%20(1).png" alt="Images Tab 1" width="49%" />
+  <img src="assets/MediScan%20(2).png" alt="Images Tab 2" width="49%" />
 </p>
 
-### 2. PDF Tab Extraction & Classification Results
+<br>
+
+<h3 align="center">2. PDF Tab Extraction & Classification Results</h3>
+<p align="center"><i>Extract and classify images embedded inside PDF documents, allowing quick triage of incoming medical reports and file attachments.</i></p>
 <p align="center">
-  <img src="assets/MediScan%20(3).png" width="48%" />
-  <img src="assets/MediScan%20(4).png" width="48%" />
+  <img src="assets/MediScan%20(3).png" alt="PDF Tab 1" width="49%" />
+  <img src="assets/MediScan%20(4).png" alt="PDF Tab 2" width="49%" />
 </p>
 
-### 3. URL Tab Scraper & Page Image Classification
+<br>
+
+<h3 align="center">3. URL Tab Scraper & Page Image Classification</h3>
+<p align="center"><i>Scrape images from any public webpage while validating outbound connections against loopback or private ranges to ensure SSRF protection.</i></p>
 <p align="center">
-  <img src="assets/MediScan%20(6).png" width="48%" />
-  <img src="assets/MediScan%20(7).png" width="48%" />
+  <img src="assets/MediScan%20(6).png" alt="URL Tab 1" width="49%" />
+  <img src="assets/MediScan%20(7).png" alt="URL Tab 2" width="49%" />
 </p>
   
-### 4. Interactive Results Table & CSV Export Button
+<br>
+
+<h3 align="center">4. Interactive Results Table & CSV Export Button</h3>
+<p align="center"><i>View, filter, and sort classification results in an interactive data table, then download the complete findings as a CSV file.</i></p>
 <p align="center">
-  <img src="assets/MediScan%20(9).png" width="31%" />
-  <img src="assets/MediScan%20(5).png" width="31%" />
-  <img src="assets/MediScan%20(8).png" width="31%" />
+  <img src="assets/MediScan%20(9).png" alt="Interactive Table 1" width="32%" />
+  <img src="assets/MediScan%20(5).png" alt="Interactive Table 2" width="32%" />
+  <img src="assets/MediScan%20(8).png" alt="Interactive Table 3" width="32%" />
 </p>
+
 
 ---
 

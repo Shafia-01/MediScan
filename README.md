@@ -15,6 +15,7 @@
 
 <div align="center">
   <h3>🔗 <a href="https://trymediscan.streamlit.app/">MediScan - Recognizing Medical Images with AI</a></h3>
+  <h3><a href="https://youtu.be/DnP0gZCNxh0"><img src="https://img.shields.io/badge/YouTube-Demo%20Video-red?style=flat-square&logo=youtube&logoColor=white" alt="YouTube Demo Video"></a></h3>
   <p>
     <i>An end‑to‑end system to classify images as medical vs non‑medical using a fine-tuned ResNet18 model. Deployed on Streamlit Community Cloud, this live web interface provides an interactive workspace where users can upload raw images, extract and classify embedded graphics within PDF documents, or securely analyze webpage URLs in real time.</i>
   </p>
@@ -293,11 +294,6 @@ The web application can be deployed on any virtual machine, container (e.g., Doc
 ## Lessons Learned
 - **TTA Tradeoffs**: Incorporating TTA provides measurable prediction robustness against slight angle and framing changes, but introduces a 2x inference latency penalty. For large documents, disabling TTA is a critical option for usability.
 - **Confidence Calibration**: Using simple softmax output for confidence thresholding is computationally free but requires empirical tuning (resulting in the default `0.60` threshold) to balance true positive recall against error rates.
-
----
-
-## License
-This project is for educational and research purposes.
 
 ---
 

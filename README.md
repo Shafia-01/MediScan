@@ -250,22 +250,30 @@ The web application can be deployed on any virtual machine, container (e.g., Doc
 
 ## Screenshots
 
-1. **Images Tab Upload & Classification Grid**:
-  ![Images tab screenshot](assets/MediScan%20(1).png)
-  ![Images tab screenshot](assets/MediScan%20(2).png)
+### 1. Images Tab Upload & Classification Grid
+<p align="center">
+  <img src="assets/MediScan%20(1).png" width="48%" />
+  <img src="assets/MediScan%20(2).png" width="48%" />
+</p>
 
-2. **PDF Tab Extraction & Classification Results**:
-  ![PDF tab screenshot](assets/MediScan%20(3).png)
-  ![PDF tab screenshot](assets/MediScan%20(4).png)
+### 2. PDF Tab Extraction & Classification Results
+<p align="center">
+  <img src="assets/MediScan%20(3).png" width="48%" />
+  <img src="assets/MediScan%20(4).png" width="48%" />
+</p>
 
-3. **URL Tab Scraper & Page Image Classification**:
-  ![URL tab screenshot](assets/MediScan%20(6).png)
-  ![URL tab screenshot](assets/MediScan%20(7).png)
+### 3. URL Tab Scraper & Page Image Classification
+<p align="center">
+  <img src="assets/MediScan%20(6).png" width="48%" />
+  <img src="assets/MediScan%20(7).png" width="48%" />
+</p>
   
-4. **Interactive Results Table & CSV Export Button**:
-  ![Results table and CSV export screenshot](assets/MediScan%20(9).png)
-  ![Results table and CSV export screenshot](assets/MediScan%20(5).png)
-  ![Results table and CSV export screenshot](assets/MediScan%20(8).png)
+### 4. Interactive Results Table & CSV Export Button
+<p align="center">
+  <img src="assets/MediScan%20(9).png" width="31%" />
+  <img src="assets/MediScan%20(5).png" width="31%" />
+  <img src="assets/MediScan%20(8).png" width="31%" />
+</p>
 
 ---
 

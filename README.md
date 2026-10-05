@@ -19,7 +19,7 @@
     <i>An end‑to‑end system to classify images as medical vs non‑medical using a fine-tuned ResNet18 model. Deployed on Streamlit Community Cloud, this live web interface provides an interactive workspace where users can upload raw images, extract and classify embedded graphics within PDF documents, or securely analyze webpage URLs in real time.</i>
   </p>
 
-  <h3><a href="https://youtu.be/DnP0gZCNxh0"><img src="https://img.shields.io/badge/YouTube-Demo%20Video-red?style=flat-square&logo=youtube&logoColor=white" alt="YouTube Demo Video"></a></h3>
+  <h3><a href="https://youtu.be/Za6AwIF4w8Q"><img src="https://img.shields.io/badge/YouTube-Demo%20Video-red?style=flat-square&logo=youtube&logoColor=white" alt="YouTube Demo Video"></a></h3>
   <p>
     The demo link above features a video walkthrough demonstrating MediScan's AI-powered image classification pipeline, fine-tuned ResNet18 model inference with Test-Time Augmentation (TTA), automated image extraction from PDF documents, secure SSRF-protected web page image scraping, and the interactive Streamlit dashboard showcasing real-time predictions, confidence metrics, and interactive results export.
   </p>
